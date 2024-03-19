@@ -1,0 +1,102 @@
+<div class="drawer-loading deactive">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<div id="form-container">
+  <div id="upper">
+    <p>Select which reports to generate:</p>
+  </div>
+  <form>
+    <label style="margin: 10px 0 5px 0; font-weight: bold;text-decoration:none; cursor:default;">Select date to get reports for:</label>
+    <input type="date" id="report-date" name="report-date" class="hasDatepicker" size="23">
+    <input type="hidden" id="report-date-alternet" name="report-date-alternet" value="06/01/2023">
+
+    <label for="warehouses" class="delivery-zone-label">Select delivery zone to get reports for:</label>
+    <select id="warehouses" name="warehouses[]" multiple="multiple" size="5" class="delivery-zone-select">
+      <option value="" selected="">All Warehouses</option>
+      <option value="1">Freehold, NJ</option>
+      <option value="3">Atlanta, GA</option>
+    </select>
+    <hr>
+
+    <label for="type" class="type-label">Select type to get reports for:</label>
+    <select id="type" name="type[]" multiple="multiple" class="type-select">
+      <option value="delivery">Local Delivery</option>
+      <option value="pickup">Store Pickup</option>
+      <option value="ups">UPS</option>
+      <option value="summary">Summary</option>
+    </select>
+
+    <hr>
+    <div id="lower">
+      <input type="submit" value="Get Reports">
+      <div style="padding-bottom: 10px;"></div>
+      <p style="margin-top: 10px;"><a href="archive.php">View all available dates</a></p>
+    </div>
+  </form>
+</div>
+
+<div class="browser-wrapper">
+</div>
+
+<script type="text/javascript">
+const btnSubmit = document.querySelector(`input[type='submit']`)
+
+function makeHttpObject() {
+  if("XMLHttpRequest" in window)return new XMLHttpRequest();
+	else if("ActiveXObject" in window)return new ActiveXObject("Msxml2.XMLHTTP");
+}
+
+btnSubmit.addEventListener('click', e => {
+  e.preventDefault()
+
+  document.querySelector('.drawer-loading').classList.remove('deactive')
+
+  const reportDateInput = document.getElementById('report-date')
+  const reportZoneInput = document.getElementById('warehouses')
+  const reportTypeInput = document.getElementById('type')
+  const reportDate = reportDateInput.value.replaceAll('-', '')
+  const reportZone = reportZoneInput.value
+  const reportType = reportTypeInput.value
+
+  let reportZoneParams = ``
+
+  switch (reportZone) {
+    // NJ
+    case "1":
+      reportZoneParams = '1,2,4,10'
+      break
+    // GA
+    case "3":
+      reportZoneParams = '5,6'
+      break
+    // ALL
+    default:
+      reportZoneParams = '1'
+      break
+  }
+
+  let url = `/generate_${reportType}?report_date=${reportDate}`
+
+  if (reportZoneParams) {
+    url += `&delivery_zone=${reportZoneParams}`
+  }
+
+  const completeUrl = `${url}`
+
+  fetch(completeUrl).then(function (response) {
+    // The API call was successful!
+    return response.text();
+  });
+
+  setTimeout(() => {
+    document.querySelector('.drawer-loading').classList.add('deactive')
+    alert('Your report is being generated! It will be sent to your email address once finished!')
+  }, 10000)
+
+})
+</script>

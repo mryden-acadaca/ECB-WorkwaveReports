@@ -1,0 +1,62 @@
+<div class="browser-wrapper">
+  <h3 class="page-title">CUSTOMER ORDERS: <%= @parsed_report_date %></h3>
+
+  <% if @pickup_orders.length > 0 %>
+    <% @pickup_orders.each do |record| %>
+      <div class="order-info">
+        <h1 class="customer-header">ORDER ID:<%= record['id'] %> </h1>
+        <h2 class="customer-header"><strong>PICKUP</strong> - <%= record['location'] ? record['location']['value'] : '' %></h2>
+      </div>
+      <div class="order-customer">
+        <h2 class="customer-header">
+          <strong><%= record['customer']['first_name'] %> <%= record['customer']['last_name'] %></strong>
+        </h2>
+        <span><%= record['customer']['email'] %></span>
+        <div class="payment-left">
+          <p class="customer-header">
+            <%= record['shipping_address']['address1'] %>
+            <%= record['shipping_address']['address2'] %>
+            <br><%= record['shipping_address']['city'] %>, <%= record['shipping_address']['province'] %>
+            <%= record['shipping_address']['zip'] %>
+          </p>
+          <p class="customer-header phone"><%= record['customer']['phone'] %></p>
+        </div>
+        <div class="payment-right">
+          <p class="customer-header">PAYMENT METHOD:
+            <%= record['gateway'] %>
+          </p>
+          <p class="customer-header">SUB TOTAL AMT: $<%= record['subtotal_price'] %></p>
+          <p class="customer-header">TOTAL AMT: $<%= record['total_price'] %></p>
+          <p class="customer-header">TOTAL
+            MEALS: <%= record['total_quantity'] %>
+          </p>
+          <p class="customer-header">PICKUP LOCATION:
+            <%= record['location'] ? record['location']['value'] : '' %>
+          </p>
+        </div>
+        <div class="customer-note">
+          <p class="customer-header">CUSTOMER NOTE: <%= record['customer_note'] ? record['customer_note']['value'] : '' %></p>
+        </div>
+      </div>
+      <table class="order-body">
+        <tbody>
+          <tr>
+            <th>Meal Name</th>
+            <th>Qty</th>
+            <th>Mods</th>
+          </tr>
+          <% record['line_items'].each do |item| %>
+            <tr>
+              <td><%= item['title'] %> <%= item['variant_title'] ? " - #{item['variant_title']}" : '' %></td>
+              <td><%= item['quantity'] %></td>
+              <td></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="page-break"></div>
+    <% end %>
+  <% else %>
+   <h3>Nothing to see here. Please try a different combination of date, delivery type and warehouse.</h3>
+  <% end %>
+</div>

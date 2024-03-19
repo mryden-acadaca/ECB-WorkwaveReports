@@ -1,0 +1,64 @@
+<div class="browser-wrapper">
+  <h3 class="page-title">CUSTOMER ORDERS: <%= @parsed_report_date %></h3>
+
+  <% if @final_orders.length > 0 %>
+    <% @final_orders.each do |id, record| %>
+      <div class="order-info">
+        <h1 class="customer-header">ORDER ID:<%= id %> </h1>
+        <h2 class="customer-header"><strong>DELIVERY</strong></h2>
+      </div>
+      <div class="order-customer">
+        <h2 class="customer-header">
+          <strong><%= record[:order]['customer']['firstName'] %> <%= record[:order]['customer']['lastName'] %></strong>
+        </h2>
+        <span><%= record[:order]['customer']['email'] %></span>
+        <div class="payment-left">
+          <p class="customer-header">
+            <%= record[:order]['shippingAddress']['address1'] %><br>
+            <%= record[:order]['shippingAddress']['address2'] %>
+            <br><%= record[:order]['shippingAddress']['city'] %>, <%= record[:order]['shippingAddress']['province'] %>
+            <%= record[:order]['shippingAddress']['zip'] %>
+          </p>
+          <p class="customer-header phone"><%= record[:order]['customer']['phone'] %></p>
+        </div>
+        <div class="payment-right">
+          <p class="customer-header">PAYMENT METHOD:
+            <%= record[:order]['paymentGatewayNames'].join(',') %>
+          </p>
+          <p class="customer-header">SUB TOTAL AMT: $<%= record[:order]['totalPrice'] %></p>
+          <p class="customer-header">TOTAL AMT: $<%= record[:order]['totalPrice'] %></p>
+          <p class="customer-header">TOTAL
+            MEALS: <%= record[:total_quantity] %>
+          </p>
+        </div>
+        <div class="customer-note">
+          <p class="customer-header">CUSTOMER NOTE:
+            <% if record[:customer_note] %>
+              <%= record[:customer_note]['value'] %>
+            <% end %>
+          </p>
+        </div>
+      </div>
+      <br>
+      <table class="order-body">
+        <tbody>
+          <tr>
+            <th>Meal Name</th>
+            <th>Qty</th>
+            <th>Mods</th>
+          </tr>
+          <% record[:order]['lineItems']['edges'].each do |item| %>
+            <tr>
+              <td><%= item['node']['title'] %><%= item['node']['variantTitle'] ? " - #{item['node']['variantTitle']}" : '' %></td>
+              <td><%= item['node']['quantity'] %></td>
+              <td></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="page-break"></div>
+    <% end %>
+  <% else %>
+   <h3>Nothing to see here. Please try a different combination of date, delivery type and warehouse.</h3>
+  <% end %>
+</div>
